@@ -1,16 +1,19 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
+
+# Add necessary packages for the installation:
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
-    apt-get install -y wget gpg sudo && \
-    wget -qO /tmp/hyperion.pub.key https://apt.hyperion-project.org/hyperion.pub.key && \
-    gpg --dearmor -o - /tmp/hyperion.pub.key > /usr/share/keyrings/hyperion.pub.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/hyperion.pub.gpg] https://apt.hyperion-project.org/ bullseye main" > /etc/apt/sources.list.d/hyperion.list && \
-    wget -qO /tmp/hyperion.nightly.pub.key https://nightly.apt.hyperion-project.org/hyperion.pub.key && \
-    gpg --dearmor -o - /tmp/hyperion.pub.key > /usr/share/keyrings/hyperion.nightly.pub.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/hyperion.nightly.pub.gpg] https://nightly.apt.hyperion-project.org/ bullseye main" > /etc/apt/sources.list.d/hyperion.nightly.list.disabled && \
-    apt-get update && \
-    apt-get install -y hyperion && \
+    apt-get install -y wget gpg sudo apt-transport-https lsb-release python3 libpython3.11-dev
+
+# Add Hyperion’s official GPG key:
+RUN wget -qO- https://releases.hyperion-project.org/hyperion.pub.key | sudo gpg --dearmor -o /usr/share/keyrings/hyperion.pub.gpg
+    
+# Add Hyperion-Project to your APT sources:
+RUN echo "deb [signed-by=/usr/share/keyrings/hyperion.pub.gpg] https://apt.releases.hyperion-project.org/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hyperion.list
+    
+# Update your local package index and install Hyperion:
+RUN apt-get update && sudo apt-get install hyperion -y && \
     apt-get -y --purge autoremove gpg && \
     apt-get clean
 
