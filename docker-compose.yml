@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   hyperionng:
-    image: hyperionng:latest
+    image: amd989/hyperionng:latest
     container_name: hyperionng
     volumes:
       - hyperionng-config:/config

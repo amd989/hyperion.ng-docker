@@ -6,7 +6,7 @@ Just copy-paste and `docker-compose up -d` it.
 
 The docker-compose file is quite simple:
 
-1. It's based on the [official Debian 11 (bullseye) docker image](https://hub.docker.com/_/debian)
+1. It's based on the [official Debian 12 (bookwork) docker image](https://hub.docker.com/_/debian)
 2. It downloads the hyperion official package from the [official hyperion apt package repository](https://apt.hyperion-project.org/)
 3. Maps the `/config` dirctory as an external volume, to keep your settings
 4. Runs hyperiond service as non-root user. Default UID:GID are 1000:1000 but they can be easily changed adding a `.env` file
@@ -24,7 +24,7 @@ You have different options to run this image, after starting the container you c
 Simply said: git clone the repo (or directly download the Dockerfile)
 
 ```sh
-git clone https://github.com/psychowood/hyperion.ng-docker
+git clone https://github.com/amd989/hyperion.ng-docker
 ```
 docker build the local image
 ```sh
@@ -40,7 +40,7 @@ version: '3.3'
 
 services:
   hyperionng:
-    image: hyperionng:latest
+    image: amd989/hyperionng:latest
     container_name: hyperionng
     volumes:
       - hyperionng-config:/config
@@ -53,45 +53,6 @@ services:
     restart: unless-stopped
 volumes:
   hyperionng-config:
-```
-
-### Standalone configuration
-
-This configuration (found in `docker-compose.standalone.yml`) is completely built when upping the container, it runs of debian:bullseye image and installs hyperion and dependencies at first boot.
-All the main hyperion ports are mapped on your docker host.
-
-```yaml
-version: '3.3'
-
-services:
-  hyperionng:
-    image: debian:bullseye
-    container_name: hyperionng
-    command: bash -c "groupadd -f hyperion || true &&
-                    adduser -q --uid ${UID:-1000} --gid ${GID:-1000} --disabled-password --no-create-home hyperion || true &&
-                    mkdir -p /config &&
-                    chown ${UID:-1000}:${GID:-1000} /config &&
-                    apt-get update &&
-                    apt-get install -y wget gpg sudo &&
-                    wget -qO /tmp/hyperion.pub.key https://apt.hyperion-project.org/hyperion.pub.key &&
-                    gpg --dearmor -o - /tmp/hyperion.pub.key > /usr/share/keyrings/hyperion.pub.gpg &&
-                    echo \"deb [signed-by=/usr/share/keyrings/hyperion.pub.gpg] https://apt.hyperion-project.org/ bullseye main\" > /etc/apt/sources.list.d/hyperion.list &&
-                    apt-get update &&
-                    apt-get install -y hyperion &&
-                    apt-get clean &&
-                    sudo -u hyperion /usr/bin/hyperiond -v --service -u /config"
-    ports:
-      - "19400:19400"
-      - "19444:19444"
-      - "19445:19445"
-      - "8090:8090"
-      - "8092:8092"
-    volumes:
-      - hyperionng-config:/config
-    restart: unless-stopped
-volumes:
-  hyperionng-config:
-
 ```
 
 In both cases, you may want to adapt the "ports" section adding other port mappings for specific cases (e.g. "2100:2100/udp" for Philips Hue in Entertainment mode).
@@ -103,7 +64,7 @@ version: '3.3'
 
 services:
   hyperionng:
-    image: hyperionng:latest
+    image: amd989/hyperionng:latest
     container_name: hyperionng
     volumes:
       - hyperionng-config:/config
