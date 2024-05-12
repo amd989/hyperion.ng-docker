@@ -40,7 +40,7 @@ version: '3.3'
 
 services:
   hyperionng:
-    image: amd989/hyperionng:latest
+    image: ghcr.io/amd989/hyperion.ng:latest
     container_name: hyperionng
     volumes:
       - hyperionng-config:/config
@@ -64,7 +64,7 @@ version: '3.3'
 
 services:
   hyperionng:
-    image: amd989/hyperionng:latest
+    image: ghcr.io/amd989/hyperion.ng:latest
     container_name: hyperionng
     volumes:
       - hyperionng-config:/config
